@@ -14,5 +14,19 @@ export function handlerValidateChirp(req: Request, res: Response) {
     return;
   }
 
-  respondWithJSON(res, 200, { valid: true });
+  respondWithJSON(res, 200, { cleanedBody: profaneFilter(params.body) });
+}
+
+function profaneFilter(text: string): string {
+  const badWords = ["kerfuffle", "sharbert", "fornax"];
+  const parts = text.split(" ");
+  let result = [];
+  for (const word of parts)
+    if (badWords.includes(word.toLowerCase())) {
+      let stars = "*".repeat(4);
+      result.push(stars);
+    } else {
+      result.push(word);
+    }
+  return result.join(" ");
 }
