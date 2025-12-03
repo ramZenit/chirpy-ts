@@ -142,3 +142,9 @@ vite.config.ts.timestamp-*
 
 # REST Test files
 *test*.http
+
+# Drizzle ORM generated files
+src/db/migrations/
+
+# Hard-coded drizzle config file
+drizzle.config.ts
