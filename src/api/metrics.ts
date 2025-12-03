@@ -1,4 +1,4 @@
-import { cfg } from "../config.js";
+import { config } from "../config.js";
 import type { Request, Response } from "express";
 
 export function handlerMetrics(_: Request, res: Response) {
@@ -7,7 +7,7 @@ export function handlerMetrics(_: Request, res: Response) {
     `<html>
       <body>
         <h1>Welcome, Chirpy Admin</h1>
-        <p>Chirpy has been visited ${cfg.fileserverHits} times!</p>
+        <p>Chirpy has been visited ${config.api.fileserverHits} times!</p>
       </body>
     </html>`
   );
