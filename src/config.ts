@@ -6,6 +6,7 @@ type Config = {
 };
 
 type APIConfig = {
+  platform: string;
   port: number;
   fileserverHits: number;
 };
@@ -31,6 +32,7 @@ const migrationConfig: MigrationConfig = {
 
 export const config: Config = {
   api: {
+    platform: envOrThrow("PLATFORM"),
     fileserverHits: 0,
     port: Number(envOrThrow("PORT")),
   },

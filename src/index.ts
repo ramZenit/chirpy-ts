@@ -13,7 +13,8 @@ import {
 } from "./api/middleware.js";
 import { handlerReset } from "./api/reset.js";
 import { handlerMetrics } from "./api/metrics.js";
-import { handlerValidateChirp } from "./api/chirps.js";
+import { handlerCreateChirp } from "./api/chirps.js";
+import { handlerCreateUser } from "./api/users.js";
 
 const migrationClient = postgres(config.db.url, { max: 1 });
 await migrate(drizzle(migrationClient), config.db.migrationConfig);
@@ -35,8 +36,12 @@ app.get("/admin/metrics", (req, res, next) => {
 app.get("/api/healthz", (req, res, next) => {
   Promise.resolve(handlerReadiness(req, res)).catch(next);
 });
-app.post("/api/validate_chirp", (req, res, next) => {
-  Promise.resolve(handlerValidateChirp(req, res)).catch(next);
+app.post("/api/chirps", (req, res, next) => {
+  Promise.resolve(handlerCreateChirp(req, res)).catch(next);
+});
+
+app.post("/api/users", (req, res, next) => {
+  Promise.resolve(handlerCreateUser(req, res)).catch(next);
 });
 
 app.use(errorMiddleware);

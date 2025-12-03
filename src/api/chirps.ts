@@ -1,20 +1,14 @@
 import type { Request, Response } from "express";
 import { respondWithJSON } from "./json.js";
 import { BadRequestError } from "../errors.js";
+import { createChirp } from "../db/queries/chirps.js";
 
-export function handlerValidateChirp(req: Request, res: Response) {
-  type parameters = {
-    body: string;
-  };
-
-  const params: parameters = req.body;
-
+function validateChirp(body: string): string {
   const maxChirpLength = 140;
-  if (params.body.length > maxChirpLength) {
+  if (body.length > maxChirpLength) {
     throw new BadRequestError("Chirp is too long. Max length is 140");
   }
-
-  respondWithJSON(res, 200, { cleanedBody: profaneFilter(params.body) });
+  return profaneFilter(body);
 }
 
 function profaneFilter(text: string): string {
@@ -29,4 +23,31 @@ function profaneFilter(text: string): string {
       result.push(word);
     }
   return result.join(" ");
+}
+
+export async function handlerCreateChirp(req: Request, res: Response) {
+  type parameters = {
+    body: string;
+    userId: string;
+  };
+
+  const params: parameters = req.body;
+
+  if (!params.body || !params.userId) {
+    throw new BadRequestError(
+      "Email and UserID are required to create a chirp."
+    );
+  }
+
+  params.body = validateChirp(params.body);
+  const chirp = await createChirp({
+    body: params.body,
+    userId: params.userId,
+  });
+
+  if (!chirp) {
+    throw new Error("Failed to create chirp.");
+  }
+
+  respondWithJSON(res, 201, chirp);
 }
