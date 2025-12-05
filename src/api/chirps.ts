@@ -70,6 +70,7 @@ export async function handlerGetAllChirps(req: Request, res: Response) {
 
   if (!chirps.length) {
     respondWithJSON(res, 204, {});
+    return;
   }
 
   respondWithJSON(res, 200, chirps);
