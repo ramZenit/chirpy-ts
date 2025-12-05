@@ -3,6 +3,13 @@ import type { MigrationConfig } from "drizzle-orm/migrator";
 type Config = {
   api: APIConfig;
   db: DBConfig;
+  auth: JWTConfig;
+};
+
+type JWTConfig = {
+  secret: string;
+  defaultDuration: number;
+  issuer: string;
 };
 
 type APIConfig = {
@@ -31,6 +38,11 @@ const migrationConfig: MigrationConfig = {
 };
 
 export const config: Config = {
+  auth: {
+    secret: envOrThrow("JWT_SECRET"),
+    defaultDuration: 60 * 60, // 1 hour;
+    issuer: "chirpy-ts",
+  },
   api: {
     platform: envOrThrow("PLATFORM"),
     fileserverHits: 0,

@@ -8,8 +8,8 @@
     "build": "npx tsc",
     "start": "node dist/index.js",
     "dev": "npx tsc && node dist/index.js",
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "generate" : "drizzle-kit generate",
+    "test": "vitest --run",
+    "generate": "drizzle-kit generate",
     "migrate": "drizzle-kit migrate"
   },
   "keywords": [],
@@ -17,13 +17,17 @@
   "license": "ISC",
   "devDependencies": {
     "@types/express": "^5.0.5",
+    "@types/jsonwebtoken": "^9.0.10",
     "@types/node": "^24.10.1",
     "drizzle-kit": "^0.31.7",
-    "typescript": "^5.9.3"
+    "typescript": "^5.9.3",
+    "vitest": "^4.0.15"
   },
   "dependencies": {
+    "argon2": "^0.44.0",
     "drizzle-orm": "^0.44.7",
     "express": "^5.1.0",
+    "jsonwebtoken": "^9.0.3",
     "postgres": "^3.4.7"
   }
 }

@@ -1,11 +1,18 @@
 import type { Request, Response } from "express";
+import { config } from "../config.js";
 import { respondWithJSON } from "./json.js";
-import { BadRequestError, NotFoundError } from "../errors.js";
+import {
+  BadRequestError,
+  NotFoundError,
+  UnauthorizedError,
+} from "../errors.js";
 import {
   createChirp,
   getAllChirp,
   getChirpById,
 } from "../db/queries/chirps.js";
+import { getUserByID } from "../db/queries/users.js";
+import { getBearerToken, validateJWT } from "../auth/jwt.js";
 
 function validateChirp(body: string): string {
   const maxChirpLength = 140;
@@ -32,23 +39,25 @@ function profaneFilter(text: string): string {
 export async function handlerCreateChirp(req: Request, res: Response) {
   type parameters = {
     body: string;
-    userId: string;
+  };
+  if (!req.body || !req.body.body) {
+    throw new BadRequestError("Body is required to create a chirp.");
+  }
+  const params: parameters = {
+    body: validateChirp(req.body.body),
   };
 
-  const params: parameters = req.body;
-
-  if (!params.body || !params.userId) {
-    throw new BadRequestError(
-      "Email and UserID are required to create a chirp."
-    );
+  const token = getBearerToken(req);
+  const userId = validateJWT(token, config.auth.secret);
+  const user = await getUserByID(userId);
+  if (!user) {
+    throw new UnauthorizedError("Invalid token: user not found");
   }
 
-  params.body = validateChirp(params.body);
   const chirp = await createChirp({
     body: params.body,
-    userId: params.userId,
+    userId: user.id,
   });
-
   if (!chirp) {
     throw new Error("Failed to create chirp.");
   }
@@ -72,18 +81,15 @@ export async function handlerGetChirpById(req: Request, res: Response) {
   };
 
   const urlParans = req.params;
-  console.log(urlParans);
+  if (!urlParans || !urlParans.chirpID) {
+    throw new BadRequestError("Chirp ID is required to get a chirp.");
+  }
 
   const params: parameters = {
     chripId: urlParans.chirpID,
   };
 
-  if (!params.chripId) {
-    throw new BadRequestError("Chirp ID is required to get a chirp.");
-  }
-
   const chirp = await getChirpById(params.chripId);
-
   if (!chirp) {
     throw new NotFoundError("Chirp not found.");
   }
